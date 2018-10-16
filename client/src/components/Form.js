@@ -13,6 +13,8 @@ class Form extends Component {
             passwordValid: false,
             formValid: false
         }
+        this.handleUserInput = this.handleUserInput.bind(this);
+        this.handleSubmit = this.handleSubmit.bind(this);
     }
 
     handleUserInput(e) {
@@ -20,6 +22,8 @@ class Form extends Component {
         const name = e.target.name;
         const value = e.target.value;
         this.setState({[name]: value }, () => {this.validateField(name, value)});
+        console.log(this.state.email);
+        console.log(this.state.password);
     }
 
     validateField(fieldName, value) {
@@ -56,30 +60,33 @@ class Form extends Component {
             email: this.state.email,
             password: this.state.password
         }
-        axios.post('/login', user).then(res => {
-            console.log(res);
-        })
+        console.log(user);
+        axios.post('/login', user)
+            .then(res => {
+                console.log(res);
+            })
+            .catch(err => console.log("error"))
 
     }
     render() {
-        console.log("in render");
         return (
-            <form className="demo">
-                <div className="form-group">
-                    <label htmlFor="email">Email</label>
-                    <input type="email" className="form-control" 
-                        name="email" value={this.state.email}
-                        onChange={(event) => this.handleUserInput(event)} />
-                </div>
-                <div className="form-group">
-                    <label htmlFor="password">Password</label>
-                    <input type="password" className="form-control" 
-                        name="password" value={this.state.password}
-                        onChange={(event) => this.handleUserInput(event)} />
+            <form className="demo" onSubmit={this.handleSubmit}>
+                <div className="row">
+                    <div className="input-field col 6">
+                        <label htmlFor="email">Email</label>
+                        <input type="email" className="validate" 
+                            name="email" value={this.state.email}
+                            onChange={this.handleUserInput} />
+                    </div>
+                    <div className="input-field col 6">
+                        <label htmlFor="password">Password</label>
+                        <input type="password" className="validate" 
+                            name="password" value={this.state.password}
+                            onChange={this.handleUserInput} />
+                    </div>
                 </div>
                 <button type="submit" className="btn btn-primary"
-                    disabled={!this.state.formValid}
-                    onSubmit={event => this.handleSubmit(event)}>Sign up</button>
+                    disabled={!this.state.formValid}>Sign up</button>
                 <div className="panel panel-default">
                     <FormErrors formErrors={this.state.formErrors} />
                 </div>
