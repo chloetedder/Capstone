@@ -4,6 +4,7 @@ const mysql = require('mysql');
 const flash = require('connect-flash');
 const cors = require('cors');
 const crypto = require('crypto');
+const passwordHash = require('password-hash');
 
 const connection = mysql.createConnection({
   host     : 'localhost',
@@ -47,8 +48,10 @@ app.get('/tox', function (req, res) {
 
 
 
-app.post('/login', (req, res) => {
-  const post = [req.body.email, req.body.password]
+app.post('/signup', (req, res) => {
+  let hashedPass = passwordHash.generate(req.body.password);
+  console.log(hashedPass);
+  const post = [req.body.email, hashedPass]
   connection.query('INSERT INTO users(email, password) VALUES(?,?)', post, (err, result) => {
     if(err) {
       throw err;
@@ -56,6 +59,13 @@ app.post('/login', (req, res) => {
     console.log('user added');
   }
   );
+})
+
+app.post('/login', (req, res) => {
+  //let password = passwordHash.verify(req.body.password, )
+  const users = connection.query('SELECT * FROM users')
+  //const users = connection.query(`SELECT * FROM users WHERE email=${req.body.email}`);
+  console.log(users);
 })
 
 

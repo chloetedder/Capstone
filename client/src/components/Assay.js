@@ -6,16 +6,15 @@ class Assay extends Component {
         super(props);
         this.state = {
           response: [],
-          posts: []
+          assay: []
         };
       }
       
       async componentDidMount() {
         await this.results();
-        const posts = await this.renderContent();
-        console.log("these are the posts:", posts);
-        this.setState({ posts });
-        console.log(this.state.posts);
+        const assay = await this.renderContent();
+        this.setState({ assay });
+        console.log(this.state.assay)
       }
     
       async results() {
@@ -53,7 +52,7 @@ class Assay extends Component {
             </thead>
             <tbody>
                  { 
-                  this.state.posts.map(data => {
+                  this.state.assay.map(data => {
                     return (
                       <tr>
                         {
