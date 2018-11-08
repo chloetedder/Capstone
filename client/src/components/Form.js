@@ -1,8 +1,9 @@
+
 import React, { Component } from 'react';
 import axios from 'axios';
 import FormErrors from './FormErrors';
 
-class Form extends Component {
+class Signup extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -61,11 +62,12 @@ class Form extends Component {
             password: this.state.password
         }
         console.log(user);
-        axios.post('/signup', user)
+        axios.post('/login', user)
             .then(res => {
+                console.log('made in login success')
                 console.log(res);
             })
-            .catch(err => console.log("error"))
+            .catch(err => console.log("error", err.response))
 
     }
     render() {
@@ -86,7 +88,7 @@ class Form extends Component {
                     </div>
                 </div>
                 <button type="submit" className="btn btn-primary"
-                    disabled={!this.state.formValid}>Sign up</button>
+                    disabled={!this.state.formValid}>Login</button>
                 <div className="panel panel-default">
                     <FormErrors formErrors={this.state.formErrors} />
                 </div>
@@ -95,4 +97,4 @@ class Form extends Component {
     }
 }
 
-export default Form;
+export default Signup;

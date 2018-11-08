@@ -1,13 +1,18 @@
 import React, { Component } from 'react';
 import axios from 'axios';
+import { Table } from 'react-bootstrap';
 
 class Toxicity extends Component {
     constructor(props) {
         super(props);
         this.state = {
           response: [],
-          posts: []
+          posts: [],
+
+          currentPage: 1,
+          rowsPerPage: 25
         };
+        this.handleClick = this.handleClick.bind(this);
       }
       
       async componentDidMount() {
@@ -25,6 +30,13 @@ class Toxicity extends Component {
         })
         .catch((err) => { console.log(err); });
       }
+
+      handleClick(event) {
+        let listid = Number(event.target.id);
+        this.setState({
+            currentPage: listid
+        });
+    }
     
       renderContent() {
         let temp = this.state.response;
@@ -40,9 +52,34 @@ class Toxicity extends Component {
           keys.push(key);
         }
         let countRow = 0, countData = 0;
+
+        const {currentPage, rowsPerPage} = this.state;
+
+        const indexOfLastRow = currentPage * rowsPerPage;
+        const indexOfFirstRow = indexOfLastRow - rowsPerPage;
+        const currentRows = this.state.posts.slice(indexOfFirstRow, indexOfLastRow);
+        console.log("current rows", currentRows);
+
+        const pageNumbers = [];
+        for (let i = 1; i <= Math.ceil(this.state.posts.length / rowsPerPage); i++) {
+            pageNumbers.push(i);
+          }
+          const renderPageNumbers = pageNumbers.map(number => {
+            return (
+              <td
+                key={number}
+                id={number}
+                onClick={this.handleClick}
+              >
+                {number}
+              </td>
+            );
+          });
+
         return (
           <div className="App">
-          <table className="centered striped">
+          <h4>Toxicity</h4>
+          <Table striped>
             <thead>
               <tr>
                 {keys.map(data => {
@@ -70,7 +107,10 @@ class Toxicity extends Component {
                   })
                 } 
             </tbody>
-          </table>
+          </Table>
+          <Table id="page-numbers">
+            {renderPageNumbers}
+          </Table>
           </div>
         );
       }

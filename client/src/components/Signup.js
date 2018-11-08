@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import FormErrors from './FormErrors';
+import { Button, Label } from 'react-bootstrap';
 
-class Signup extends Component {
+class Form extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -61,7 +62,7 @@ class Signup extends Component {
             password: this.state.password
         }
         console.log(user);
-        axios.post('/login', user)
+        axios.post('/signup', user)
             .then(res => {
                 console.log(res);
             })
@@ -73,20 +74,20 @@ class Signup extends Component {
             <form className="demo" onSubmit={this.handleSubmit}>
                 <div className="row">
                     <div className="input-field col 6">
-                        <label htmlFor="email">Email</label>
+                        <Label htmlFor="email">Email</Label>
                         <input type="email" className="validate" 
                             name="email" value={this.state.email}
                             onChange={this.handleUserInput} />
                     </div>
                     <div className="input-field col 6">
-                        <label htmlFor="password">Password</label>
+                        <Label htmlFor="password">Password</Label>
                         <input type="password" className="validate" 
                             name="password" value={this.state.password}
                             onChange={this.handleUserInput} />
                     </div>
                 </div>
-                <button type="submit" className="btn btn-primary"
-                    disabled={!this.state.formValid}>Login</button>
+                <Button type="submit"
+                    disabled={!this.state.formValid}>Sign up</Button>
                 <div className="panel panel-default">
                     <FormErrors formErrors={this.state.formErrors} />
                 </div>
@@ -95,4 +96,4 @@ class Signup extends Component {
     }
 }
 
-export default Signup;
+export default Form;

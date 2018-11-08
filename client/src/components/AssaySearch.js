@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import axios from 'axios';
+import { Pagination, Table, Button, FormGroup } from 'react-bootstrap';
 
 class AssaySearch extends Component {
     constructor(props) {
@@ -11,7 +12,7 @@ class AssaySearch extends Component {
           currentNameInput: '',
           currentIdInput: '',
           currentPage: 1,
-          rowsPerPage: 10
+          rowsPerPage: 25
         }
         this.handleClick = this.handleClick.bind(this);
       }
@@ -93,7 +94,7 @@ class AssaySearch extends Component {
 
         const pageNumbers = [];
         for (let i = 1; i <= Math.ceil(this.state.assay.length / rowsPerPage); i++) {
-            pageNumbers.push(i);
+            pageNumbers.push(<Pagination.Item onClick={this.handleClick}>{i}</Pagination.Item>);
           }
           const renderPageNumbers = pageNumbers.map(number => {
             return (
@@ -111,12 +112,15 @@ class AssaySearch extends Component {
         return (
           <div className="App">
           <h4>Search by aid</h4>
+          <FormGroup controlId="formBasicText">
                 <input type="text" onChange={e=>this.handleIdInput(e)}/>
                 <h4>Search by assay_source_name</h4>
                 <input type="text" onChange={e=>this.handleNameInput(e)}/>
-                <button onClick={e=>this.handleSubmit(e)}>Submit</button>
-                <button onClick={()=>this.setState({assay:this.state.originalAssay})}>Refresh</button>
-          <table width="10%" height="50%">
+                <br/>
+                <Button onClick={e=>this.handleSubmit(e)}>Submit</Button>
+                <Button onClick={()=>this.setState({assay:this.state.originalAssay})}>Refresh</Button>
+          </FormGroup>
+          <Table width="10%" height="50%" striped>
             <thead>
               <tr>
                 {keys.map(data => {
@@ -144,10 +148,10 @@ class AssaySearch extends Component {
                   })
                 } 
             </tbody>
-          </table>
+          </Table>
           <div>
                     <table id="page-numbers">
-                    {renderPageNumbers}
+                    <Pagination bsSize="medium">{pageNumbers}</Pagination>
                     </table>
                 </div>
           </div>

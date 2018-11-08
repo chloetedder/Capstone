@@ -1,11 +1,15 @@
 import React, { Component } from 'react';
-import { BrowserRouter, Route, Link } from 'react-router-dom';
+import { BrowserRouter, Route } from 'react-router-dom';
 import './App.css';
 import Login1 from './components/Login1';
 import Assay from './components/Assay';
 import Toxicity from './components/Toxicity';
 import AssaySearch from './components/AssaySearch';
 import Signup from './components/Signup';
+import Navbar from './components/CustomNavbar';
+import Home from './components/Home';
+import AdvancedSearch from './components/AdvancedSearch';
+import NewAssay from './components/NewAssay';
 
 class App extends Component {
 
@@ -13,7 +17,7 @@ class App extends Component {
     return (
       <BrowserRouter>
       <div className="App">
-      <Link to="/assay">Assay</Link>
+      {/* <Link to="/assay">Assay</Link>
       <br />
       <Link to="/enter">SignUp</Link>
       <br />
@@ -21,13 +25,17 @@ class App extends Component {
       <br />
       <Link to="/toxicity">Toxicity</Link>
       <br />
-      <Link to="/enter2">Login</Link>
+      <Link to="/enter2">Login</Link> */}
+      <Navbar />
             <div>
+              <Route exact path="/" component={Home} />
               <Route exact path="/enter" component={Login1} />
               <Route exact path="/assay" component={Assay} />
               <Route exact path="/toxicity" component={Toxicity} />
               <Route exact path="/searchAssay" component={AssaySearch} />
               <Route exact path="/enter2" component={Signup} />
+              <Route exact path="/advanced" component={AdvancedSearch} />
+              <Route exact path="/newassay" component={NewAssay} />
             </div>
       </div>
       </BrowserRouter>

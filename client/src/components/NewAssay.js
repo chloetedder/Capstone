@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
 import axios from 'axios';
-import { Table } from 'react-bootstrap';
+import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
+import './NewAssay.css';
 
-class Assay extends Component {
+class NewAssay extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -39,40 +40,28 @@ class Assay extends Component {
         for(let key in first){
           keys.push(key);
         }
+        const options = {
+            clearSearch: true
+          };
         return (
-          <div className="App">
-          <Table striped>
-            <thead>
-              <tr>
+          <BootstrapTable keyField='tablefields' 
+            data={ this.state.assay } 
+            striped 
+            pagination 
+            search={true} 
+            exportCSV={ true } 
+            options={options}
+            trClassName="customClass"
+            
+            >
                 {keys.map(data => {
                   return (
-                  <th key={data}>{data}</th>
+                  <TableHeaderColumn width='300px' dataField={data}>{data}</TableHeaderColumn>
                   )
                 })}
-              </tr>
-            </thead>
-            <tbody>
-                 { 
-                  this.state.assay.map(data => {
-                    return (
-                      <tr>
-                        {
-                          Object.values(data).map(each => {
-                            return (
-                            <td>{each}</td>
-                          )
-                          })
-                       }
-                      </tr>
-                    )
-                   
-                  })
-                } 
-            </tbody>
-          </Table>
-          </div>
+          </BootstrapTable>
         );
       }
 }
 
-export default Assay;
+export default NewAssay;

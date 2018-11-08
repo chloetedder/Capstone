@@ -5,14 +5,45 @@ const flash = require('connect-flash');
 const cors = require('cors');
 const crypto = require('crypto');
 const passwordHash = require('password-hash');
-
+/*
 const connection = mysql.createConnection({
   host     : 'localhost',
   user     : 'root',
   password : 'chloe',
   database : 'test'
 });
- connection.connect();
+ //connection.connect();
+ */
+
+ let connection;
+ function handleDisconnect() {
+  connection = mysql.createConnection({
+    host     : 'localhost',
+    user     : 'root',
+    password : 'chloe',
+    database : 'test'
+  }); // Recreate the connection, since
+                                                  // the old one cannot be reused.
+
+  connection.connect(function(err) {              // The server is either down
+    if(err) {                                     // or restarting (takes a while sometimes).
+      console.log('error when connecting to db:', err);
+      setTimeout(handleDisconnect, 2000); // We introduce a delay before attempting to reconnect,
+    }                                     // to avoid a hot loop, and to allow our node script to
+  });                                     // process asynchronous requests in the meantime.
+                                          // If you're also serving http, display a 503 error.
+  connection.on('error', function(err) {
+    console.log('db error', err);
+    if(err.code === 'PROTOCOL_CONNECTION_LOST') { // Connection to the MySQL server is usually
+      handleDisconnect();                         // lost due to either server restart, or a
+    } else {                                      // connnection idle timeout (the wait_timeout
+      throw err;                                  // server variable configures this)
+    }
+  });
+}
+
+handleDisconnect();
+
 // Initialize the app
 const app = express();
 
@@ -36,7 +67,6 @@ app.get('/posts', function (req, res) {
       res.send(results)
     });
 
-    //connection.end();
 });
 
 app.get('/tox', function (req, res) {
@@ -62,10 +92,15 @@ app.post('/signup', (req, res) => {
 })
 
 app.post('/login', (req, res) => {
-  //let password = passwordHash.verify(req.body.password, )
-  const users = connection.query('SELECT * FROM users')
-  //const users = connection.query(`SELECT * FROM users WHERE email=${req.body.email}`);
-  console.log(users);
+  const users = connection.query("SELECT * FROM users", (err, result) => {
+    if(err) {
+      console.log(err);
+    }
+  });
+  //const usersAll = connection.query("SELECT * FROM users WHERE email = ?", req.body.email)
+  console.log("all", users);
+  //let password = passwordHash.verify(req.body.password, users[0].password)
+  //if(users != undefined)
 })
 
 
