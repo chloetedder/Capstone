@@ -1,30 +1,33 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import FormErrors from './FormErrors';
-import { Button, Label } from 'react-bootstrap';
+import { FormGroup, FormControl, Grid, Jumbotron, ControlLabel } from 'react-bootstrap';
 
-class Form extends Component {
+class Signup extends Component {
     constructor(props) {
         super(props);
         this.state = {
             email: '',
             password: '',
             formErrors: {email: '', password: ''},
+            registered: 1,
             emailValid: false,
             passwordValid: false,
             formValid: false
         }
         this.handleUserInput = this.handleUserInput.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
+        this.alreadyReg = this.alreadyReg.bind(this);
     }
 
     handleUserInput(e) {
+        this.setState({
+            registered: 1
+        })
         e.preventDefault();
         const name = e.target.name;
         const value = e.target.value;
         this.setState({[name]: value }, () => {this.validateField(name, value)});
-        console.log(this.state.email);
-        console.log(this.state.password);
     }
 
     validateField(fieldName, value) {
@@ -61,18 +64,75 @@ class Form extends Component {
             email: this.state.email,
             password: this.state.password
         }
-        console.log(user);
         axios.post('/signup', user)
             .then(res => {
-                console.log(res);
+                if(!res.data) {
+                    this.setState({
+                        registered: 0,
+                        email: '',
+                        password: ''
+                    })
+                }
+                else {
+                    this.setState({
+                        registered: 2
+                    })
+                }
             })
             .catch(err => console.log("error"))
 
     }
+
+    alreadyReg() {
+        if(!this.state.registered) {
+            return <p>Email already registered</p>;
+        }
+        if(this.state.registered === 2)
+            return <p>{this.state.email} is now registered</p>;
+    }
+
     render() {
         return (
-            <form className="demo" onSubmit={this.handleSubmit}>
-                <div className="row">
+            <Grid>
+                <Jumbotron>
+                <p>Registration</p>
+                <form className="demo" onSubmit={this.handleSubmit}>
+                        <FormGroup>
+                            <ControlLabel>Email</ControlLabel>
+                            <FormControl
+                            type="email"
+                            className="validate"
+                            value={this.state.email}
+                            placeholder="Enter Email Address"
+                            name="email"
+                            onChange={this.handleUserInput}
+                            />
+                            <ControlLabel>Password</ControlLabel>
+                            <FormControl
+                            type="password"
+                            className="validate"
+                            value={this.state.password}
+                            placeholder="Enter Password"
+                            name="password"
+                            onChange={this.handleUserInput}
+                            />
+                            <button onClick={this.handleSubmit} className="btn btn-primary"
+                                disabled={!this.state.formValid}>Sign up</button>
+                            </FormGroup>
+                            <FormErrors formErrors={this.state.formErrors} />
+                </form>
+                {this.alreadyReg()}
+                </Jumbotron>
+            </Grid>
+            
+        )
+    }
+}
+
+export default Signup;
+
+/*
+<div className="row">
                     <div className="input-field col 6">
                         <Label htmlFor="email">Email</Label>
                         <input type="email" className="validate" 
@@ -91,9 +151,4 @@ class Form extends Component {
                 <div className="panel panel-default">
                     <FormErrors formErrors={this.state.formErrors} />
                 </div>
-            </form>
-        )
-    }
-}
-
-export default Form;
+*/

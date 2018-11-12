@@ -2,13 +2,15 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import FormErrors from './FormErrors';
+import { FormControl, Grid, Jumbotron, ControlLabel, FormGroup } from 'react-bootstrap';
 
-class Signup extends Component {
+class Form extends Component {
     constructor(props) {
         super(props);
         this.state = {
             email: '',
             password: '',
+            loggedin: 1,
             formErrors: {email: '', password: ''},
             emailValid: false,
             passwordValid: false,
@@ -16,10 +18,14 @@ class Signup extends Component {
         }
         this.handleUserInput = this.handleUserInput.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
+        this.checkingStatus = this.checkingStatus.bind(this);
     }
 
     handleUserInput(e) {
         e.preventDefault();
+        this.setState({
+            loggedin: 1
+        })
         const name = e.target.name;
         const value = e.target.value;
         this.setState({[name]: value }, () => {this.validateField(name, value)});
@@ -61,17 +67,85 @@ class Signup extends Component {
             email: this.state.email,
             password: this.state.password
         }
-        console.log(user);
         axios.post('/login', user)
             .then(res => {
-                console.log('made in login success')
-                console.log(res);
+                if(!res.data) {
+                    this.setState({
+                        loggedin: 0,
+                        password: ''
+                    })
+                }
+                else if(res.data.invalid === 2) {
+                    this.setState({
+                        loggedin: 2,
+                        email: '',
+                        password: ''
+                    })
+                }
+                else {
+                    this.setState({
+                        loggedin: 3,
+                        email: '',
+                        password: ''
+                    })
+                }
             })
             .catch(err => console.log("error", err.response))
 
     }
+
+    checkingStatus() {
+        if(!this.state.loggedin)
+            return <p>Re-enter password</p>;
+        if(this.state.loggedin === 2)
+            return <p>Email not registered</p>;
+        if(this.state.loggedin === 3)
+            return <p>Successfully logged in!</p>;
+    }
+
     render() {
+
         return (
+            <Grid>
+                <Jumbotron>
+                <p>Login</p>
+                <form className="demo">
+                    <FormGroup>
+                    <ControlLabel>Email</ControlLabel>
+                    <FormControl
+                        type="email"
+                        className="validate"
+                        value={this.state.email}
+                        placeholder="Enter Email Address"
+                        name="email"
+                        onChange={this.handleUserInput}
+                    />
+                    <ControlLabel>Password</ControlLabel>
+                    <FormControl
+                        type="password"
+                        className="validate"
+                        value={this.state.password}
+                        placeholder="Enter Password"
+                        name="password"
+                        onChange={this.handleUserInput}
+                    />
+                    <button onClick={this.handleSubmit} className="btn btn-primary"
+                        >Login</button>
+                    </FormGroup>
+                    <FormErrors formErrors={this.state.formErrors} />
+                </form>
+                {this.checkingStatus()}
+                </Jumbotron>
+            </Grid>
+        )
+        
+    }
+}
+
+export default Form;
+
+/*
+return (
             <form className="demo" onSubmit={this.handleSubmit}>
                 <div className="row">
                     <div className="input-field col 6">
@@ -94,7 +168,5 @@ class Signup extends Component {
                 </div>
             </form>
         )
-    }
-}
 
-export default Signup;
+        */

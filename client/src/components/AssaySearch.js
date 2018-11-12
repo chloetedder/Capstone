@@ -83,7 +83,6 @@ class AssaySearch extends Component {
         for(let key in first){
           keys.push(key);
         }
-        let count = 0;
 
         const {currentPage, rowsPerPage} = this.state;
 
@@ -96,6 +95,7 @@ class AssaySearch extends Component {
         for (let i = 1; i <= Math.ceil(this.state.assay.length / rowsPerPage); i++) {
             pageNumbers.push(<Pagination.Item onClick={this.handleClick}>{i}</Pagination.Item>);
           }
+        /*
           const renderPageNumbers = pageNumbers.map(number => {
             return (
               <td
@@ -107,7 +107,7 @@ class AssaySearch extends Component {
               </td>
             );
           });
-
+          */
 
         return (
           <div className="App">

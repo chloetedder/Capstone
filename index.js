@@ -23,15 +23,22 @@ const connection = mysql.createConnection({
     password : 'chloe',
     database : 'test'
   }); // Recreate the connection, since
-                                                  // the old one cannot be reused.
-
+   // the old one cannot be reused.
+   var del = connection._protocol._delegateError;
+   connection._protocol._delegateError = function(err, sequence){
+     if (err.fatal) {
+       console.trace('fatal error: ' + err.message);
+     }
+     return del.call(this, err, sequence);
+   };
   connection.connect(function(err) {              // The server is either down
     if(err) {                                     // or restarting (takes a while sometimes).
       console.log('error when connecting to db:', err);
       setTimeout(handleDisconnect, 2000); // We introduce a delay before attempting to reconnect,
     }                                     // to avoid a hot loop, and to allow our node script to
   });                                     // process asynchronous requests in the meantime.
-                                          // If you're also serving http, display a 503 error.
+    // If you're also serving http, display a 503 error.
+
   connection.on('error', function(err) {
     console.log('db error', err);
     if(err.code === 'PROTOCOL_CONNECTION_LOST') { // Connection to the MySQL server is usually
@@ -76,31 +83,58 @@ app.get('/tox', function (req, res) {
   });
 });
 
+app.get('/chem', function (req, res) {
+  connection.query('SELECT * FROM chemical', function (error, results, fields) {
+    if (error) throw error;
+    res.send(results)
+  });
+});
+
+app.get('/target', function (req, res) {
+  connection.query('SELECT * FROM target', function (error, results, fields) {
+    if (error) throw error;
+    res.send(results)
+  });
+});
 
 
 app.post('/signup', (req, res) => {
-  let hashedPass = passwordHash.generate(req.body.password);
-  console.log(hashedPass);
-  const post = [req.body.email, hashedPass]
-  connection.query('INSERT INTO users(email, password) VALUES(?,?)', post, (err, result) => {
-    if(err) {
-      throw err;
+  connection.query('SELECT * FROM users WHERE email = ?', req.body.email, (err, result) => {
+    if(result.length > 0) {
+      res.send(false);
     }
-    console.log('user added');
-  }
-  );
+    else {
+      let hashedPass = passwordHash.generate(req.body.password);
+      const post = [req.body.email, hashedPass]
+      const q = connection.query('INSERT INTO users(email, password) VALUES(?,?)', post, (err, result) => {
+        if(err)
+          throw err;
+        res.send(true);
+        console.log('user added');
+      });
+    }
+  })
 })
 
 app.post('/login', (req, res) => {
-  const users = connection.query("SELECT * FROM users", (err, result) => {
+  const users = connection.query("SELECT * FROM users WHERE email = ?", req.body.email, (err, result) => {
     if(err) {
       console.log(err);
     }
+    if(result.length == 1) {
+      let password = passwordHash.verify(req.body.password, result[0].password);
+      //will send true for correct and false for mismatched passwords
+      res.send(password);
+    }
+    else {
+      const obj = {
+        invalid: 2
+      }
+      res.send(obj)
+    }
+    
   });
-  //const usersAll = connection.query("SELECT * FROM users WHERE email = ?", req.body.email)
-  console.log("all", users);
-  //let password = passwordHash.verify(req.body.password, users[0].password)
-  //if(users != undefined)
+  
 })
 
 

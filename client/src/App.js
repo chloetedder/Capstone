@@ -1,14 +1,14 @@
 import React, { Component } from 'react';
 import { BrowserRouter, Route } from 'react-router-dom';
 import './App.css';
-import Login1 from './components/Login1';
+import Form from './components/Form';
 import Assay from './components/Assay';
 import Toxicity from './components/Toxicity';
 import AssaySearch from './components/AssaySearch';
 import Signup from './components/Signup';
 import Navbar from './components/CustomNavbar';
 import Home from './components/Home';
-import AdvancedSearch from './components/AdvancedSearch';
+import AdvancedSearch from './components/Search/AdvancedSearch';
 import NewAssay from './components/NewAssay';
 
 class App extends Component {
@@ -29,7 +29,7 @@ class App extends Component {
       <Navbar />
             <div>
               <Route exact path="/" component={Home} />
-              <Route exact path="/enter" component={Login1} />
+              <Route exact path="/enter" component={Form} />
               <Route exact path="/assay" component={Assay} />
               <Route exact path="/toxicity" component={Toxicity} />
               <Route exact path="/searchAssay" component={AssaySearch} />
