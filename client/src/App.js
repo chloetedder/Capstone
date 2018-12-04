@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { BrowserRouter, Route } from 'react-router-dom';
 import './App.css';
 import NewTox from './components/Tables/NewTox';
-import AssaySearch from './components/AssaySearch';
 import Navbar from './components/CustomNavbar';
 import Home from './components/Home';
 import AdvancedSearch from './components/Search/AdvancedSearch';

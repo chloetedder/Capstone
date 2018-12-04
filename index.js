@@ -111,53 +111,6 @@ app.get('/target', function (req, res) {
   });
 });
 
-
-app.post('/signup', (req, res) => {
-  connection.query('SELECT * FROM users WHERE email = ?', req.body.email, (err, result) => {
-    if(result.length > 0) {
-      res.send(false);
-    }
-    else {
-      let hashedPass = passwordHash.generate(req.body.password);
-      const post = [req.body.email, hashedPass]
-      const q = connection.query('INSERT INTO users(email, password) VALUES(?,?)', post, (err, result) => {
-        if(err)
-          throw err;
-        res.send(true);
-        console.log('user added');
-      });
-    }
-  })
-})
-
-app.post('/login', (req, res) => {
-  const users = connection.query("SELECT * FROM users WHERE email = ?", req.body.email, (err, result) => {
-    if(err) {
-      console.log(err);
-    }
-    if(result.length == 1) {
-      let password = passwordHash.verify(req.body.password, result[0].password);
-      //will send true for correct and false for mismatched passwords
-      res.send(password);
-    }
-    else {
-      const obj = {
-        invalid: 2
-      }
-      res.send(obj)
-    }
-    
-  });
-  
-})
-
-
-app.get('/logout', (req, res) => {
-  req.logout();
-  res.redirect('/');
-})
-
-
 // Start the server
 app.listen(5000, () => {
  console.log('up and running');

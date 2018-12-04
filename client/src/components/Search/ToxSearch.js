@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import axios from 'axios';
-import { Pagination, Table, FormControl, FormGroup, ControlLabel, Grid } from 'react-bootstrap';
+import { FormControl, FormGroup, ControlLabel } from 'react-bootstrap';
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 
 
@@ -138,63 +138,3 @@ class ToxSearch extends Component {
 }
 
 export default ToxSearch;
-/*
-const {currentPage, rowsPerPage} = this.state;
-
-        const indexOfLastRow = currentPage * rowsPerPage;
-        const indexOfFirstRow = indexOfLastRow - rowsPerPage;
-        const currentRows = this.state.chem.slice(indexOfFirstRow, indexOfLastRow);
-
-
-        const pageNumbers = [];
-        for (let i = 1; i <= Math.ceil(this.state.chem.length / rowsPerPage); i++) {
-            pageNumbers.push(i);
-          }
-        
-          const renderPageNumbers = pageNumbers.map(number => {
-            return (
-              <Pagination.Item
-                key={number}
-                id={number}
-                onClick={this.handleClick}
-              >
-                {number}
-              </Pagination.Item>
-            );
-          });
-          
-          let count = 0;
-
-          <Grid>
-            <Table width="10%" height="50%" striped>
-            <thead>
-              <tr>
-                {keys.map(data => {
-                  return (
-                  <th key={data}>{data}</th>
-                  )
-                })}
-              </tr>
-            </thead>
-            <tbody height="10%">
-                 { 
-                  currentRows.map(data => {
-                    return (
-                      <tr key={count}>
-                        {
-                          Object.values(data).map(each => {
-                            return (
-                            <td key={count++}>{each}</td>
-                          )
-                          })
-                       }
-                      </tr>
-                    )
-                   
-                  })
-                } 
-            </tbody>
-          </Table>
-                    <Pagination bsSize="medium">{renderPageNumbers}</Pagination>
-            </Grid>
-          */
