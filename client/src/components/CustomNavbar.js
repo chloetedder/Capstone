@@ -2,11 +2,16 @@ import React, { Component } from 'react'
 import { Navbar, Nav, NavItem } from 'react-bootstrap'
 import { Link } from 'react-router-dom'
 import './CustomNavbar.css'
+import auth0Client from './Authorization/Auth'
 //import Searchbar from './Searchbar.js'
 //import FilterTable from './FilterTable'
 
 export default class CustomNavbar extends Component {
   render() {
+    const signOut = () => {
+      auth0Client.signOut();
+      this.props.history.replace('/');
+    }
     return (
         <Navbar default collapseOnSelect>
           <Navbar.Header>
@@ -26,15 +31,26 @@ export default class CustomNavbar extends Component {
             <NavItem eventKey = {3} componentClass={Link} href="/toxitiy" to="/toxicity">
               Toxicity
             </NavItem>
-            <NavItem eventKey = {4} componentClass={Link} href="/searchAssay" to="/searchAssay">
-              Search
+            <NavItem eventKey = {4} componentClass={Link} href="/chemical" to="/chemical">
+              Chemical
             </NavItem>
-            <NavItem eventKey = {5} componentClass={Link} href="/enter" to="/enter">
-              Login
+            {
+              auth0Client.isAuthenticated() && <NavItem eventKey = {6} componentClass={Link} href="/advanced" to="/advanced">
+              Advanced Search
             </NavItem>
-            <NavItem eventKey = {6} componentClass={Link} href="/enter2" to="/enter2">
-              Register
-            </NavItem>
+            }
+            {
+                !auth0Client.isAuthenticated() &&
+                <NavItem eventKey = {1} componentClass={Link} href="/" to="/" onClick={auth0Client.signIn}>
+                  Login
+                </NavItem>
+            }
+            {
+                auth0Client.isAuthenticated() &&
+                <NavItem eventKey = {1} componentClass={Link} href="/" to="/" onClick={() => {signOut()}}>
+                  Logout
+                </NavItem>
+            }
           </Nav>
           </Navbar.Collapse>
         </Navbar>

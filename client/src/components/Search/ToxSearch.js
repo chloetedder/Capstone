@@ -4,18 +4,17 @@ import { Pagination, Table, FormControl, FormGroup, ControlLabel, Grid } from 'r
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 
 
-class ChemicalSearch extends Component {
+class ToxSearch extends Component {
     constructor(props) {
         super(props);
         this.state = {
-          originalChem: [],
+          originalTox: [],
           response: [],
-          chem: [],
+          tox: [],
           showTable: 0,
-          name: '',
-          formula: '',
-          smiles: '',
-          weight: '',
+          chmn: '',
+          casn: '',
+          spid: '',
           currentPage: 1,
           rowsPerPage: 25
         }
@@ -23,7 +22,7 @@ class ChemicalSearch extends Component {
       }
     
       async results() {
-        await axios.get('http://localhost:5000/chem')
+        await axios.get('http://localhost:5000/tox')
         .then(res => {
           this.setState({ response: res.data })
         })
@@ -47,26 +46,23 @@ class ChemicalSearch extends Component {
     async handleSubmit(e){
         e.preventDefault()
         await this.results();
-        const chem = await this.renderContent();
+        const tox = await this.renderContent();
         this.setState({
-            chem, 
-            originalChemical: chem,
+            tox, 
+            originalTox: tox,
             showTable: 1
         });
-        let filterArray = this.state.chem.filter(current=>{
-            return current.name.toString().includes(this.state.name);
+        let filterArray = this.state.tox.filter(current=>{
+            return current.chnm.toString().includes(this.state.chmn);
         })
         filterArray = filterArray.filter(current=>{
-            return current.formula.toString().includes(this.state.formula);
+          return current.casn.toString().includes(this.state.casn);
         })
         filterArray = filterArray.filter(current=>{
-          return current.SMILES.toString().includes(this.state.smiles);
-        })
-        filterArray = filterArray.filter(current=>{
-          return current.MolWt.toString().includes(this.state.weight);
+          return current.spid.toString().includes(this.state.spid);
         })
         this.setState({
-            chem: filterArray
+            tox: filterArray
         })
     }
     
@@ -91,7 +87,7 @@ class ChemicalSearch extends Component {
         return (
             <div>
               <BootstrapTable keyField='tablefields'
-                  data={ this.state.chem }
+                  data={ this.state.tox }
                   striped 
                   pagination 
                   search={true} 
@@ -112,29 +108,24 @@ class ChemicalSearch extends Component {
       render() {
         return (
           <div className="App">
-          <h2>Chemical Advanced Search</h2>
+          <h2>Toxicity Advanced Search</h2>
               <br/>
           <form>
             <FormGroup>
-                <ControlLabel>Name</ControlLabel>
+                <ControlLabel>CHMN</ControlLabel>
                 <FormControl type="text"
                     onChange={e=>this.handleUserInput(e)}
-                    name="name"
+                    name="chmn"
                 />
-                <ControlLabel>Formula</ControlLabel>
+                <ControlLabel>CASN</ControlLabel>
                 <FormControl type="text"
                     onChange={e=>this.handleUserInput(e)}
-                    name="formula"
+                    name="casn"
                 />
-                <ControlLabel>SMILES</ControlLabel>
+                <ControlLabel>SPID</ControlLabel>
                 <FormControl type="text"
                     onChange={e=>this.handleUserInput(e)}
-                    name="smiles"
-                />
-                <ControlLabel>Mole Weight</ControlLabel>
-                <FormControl type="text"
-                    onChange={e=>this.handleUserInput(e)}
-                    name="weight"
+                    name="spid"
                 />
                 <button onClick={e=>this.handleSubmit(e)}>Submit</button>
                 <button onClick={()=>this.setState({chem:this.state.originalChemical})}>Refresh</button>
@@ -146,7 +137,7 @@ class ChemicalSearch extends Component {
       }
 }
 
-export default ChemicalSearch;
+export default ToxSearch;
 /*
 const {currentPage, rowsPerPage} = this.state;
 

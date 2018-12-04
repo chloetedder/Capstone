@@ -5,6 +5,8 @@ const flash = require('connect-flash');
 const cors = require('cors');
 const crypto = require('crypto');
 const passwordHash = require('password-hash');
+const jwt = require('express-jwt');
+const jwksRsa = require('jwks-rsa');
 /*
 const connection = mysql.createConnection({
   host     : 'localhost',
@@ -65,7 +67,19 @@ app.use(cors());
   next();
 });*/
 
+const checkJwt = jwt({
+  secret: jwksRsa.expressJwtSecret({
+    cache: true,
+    rateLimit: true,
+    jwksRequestsPerMinute: 5,
+    jwksUri: `https://capstoneauth.auth0.com/.well-known/jwks.json`
+  }),
 
+  // Validate the audience and the issuer.
+  audience: 'capstoneauth.auth0.com',
+  issuer: `https://capstoneauth.auth0.com/`,
+  algorithms: ['RS256']
+});
 
 
 app.get('/posts', function (req, res) {

@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import { Pagination, Table, FormControl, FormGroup, ControlLabel, Grid } from 'react-bootstrap';
+import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 
 class TargetSearch extends Component {
     constructor(props) {
@@ -13,6 +14,8 @@ class TargetSearch extends Component {
           name: '',
           symbol: '',
           id: '',
+          track: '',
+          geneid: '',
           currentPage: 1,
           rowsPerPage: 25
         }
@@ -59,6 +62,13 @@ class TargetSearch extends Component {
         filterArray = filterArray.filter(current=>{
             return current.intended_target_gene_id.toString().includes(this.state.id);
         })
+        filterArray = filterArray.filter(current=>{
+          return current.intended_target_track_status.toString().includes(this.state.track);
+        })
+        filterArray = filterArray.filter(current=>{
+          return current.technological_target_gene_id.toString().includes(this.state.geneid);
+        })
+        
         this.setState({
             target: filterArray
         })
@@ -79,8 +89,76 @@ class TargetSearch extends Component {
         for(let key in first){
           keys.push(key);
         }
+        const options = {
+          clearSearch: true
+        };
+        return (
+            <div>
+              <BootstrapTable keyField='tablefields'
+                  data={ this.state.target }
+                  striped 
+                  pagination 
+                  search={true} 
+                  exportCSV={ true } 
+                  options={options}
+                  trClassName="customClass"
+                  >
+                      {keys.map(data => {
+                        return (
+                        <TableHeaderColumn width={200} height={200} dataField={data}>{data}</TableHeaderColumn>
+                        )
+                      })}
+              </BootstrapTable>
+          </div>
+          );
+          }
+      }
+      render() {
+        return (
+          <div className="App">
+          <h2>Target Advanced Search</h2>
+          <br/>
+          <form>
+            <FormGroup>
+                <ControlLabel>Name</ControlLabel>
+                <FormControl type="text"
+                    onChange={e=>this.handleUserInput(e)}
+                    name="name"
+                />
+                <ControlLabel>Symbol</ControlLabel>
+                <FormControl type="text"
+                    onChange={e=>this.handleUserInput(e)}
+                    name="symbol"
+                />
+                <ControlLabel>ID</ControlLabel>
+                <FormControl type="text"
+                    onChange={e=>this.handleUserInput(e)}
+                    name="id"
+                />
+                <ControlLabel>Track Status</ControlLabel>
+                <FormControl type="text"
+                    onChange={e=>this.handleUserInput(e)}
+                    name="track"
+                />
+                <ControlLabel>Technological Gene ID</ControlLabel>
+                <FormControl type="text"
+                    onChange={e=>this.handleUserInput(e)}
+                    name="geneid"
+                />
+                <button onClick={e=>this.handleSubmit(e)}>Submit</button>
+                <button onClick={()=>this.setState({target:this.state.originalTarget})}>Refresh</button>
+            </FormGroup>
+          </form>
+          {this.renderTable()}
+          </div>
+        );
+      }
+}
 
-        const {currentPage, rowsPerPage} = this.state;
+export default TargetSearch;
+
+/*
+ const {currentPage, rowsPerPage} = this.state;
 
         const indexOfLastRow = currentPage * rowsPerPage;
         const indexOfFirstRow = indexOfLastRow - rowsPerPage;
@@ -106,8 +184,7 @@ class TargetSearch extends Component {
           
           let count = 0;
 
-          return (
-              <Grid>
+<Grid>
             <Table width="10%" height="50%" striped>
             <thead>
               <tr>
@@ -139,37 +216,4 @@ class TargetSearch extends Component {
           </Table>
                     <Pagination bsSize="medium">{renderPageNumbers}</Pagination>
             </Grid>
-          );
-          }
-      }
-      render() {
-        return (
-          <div className="App">
-          <form>
-            <FormGroup>
-                <ControlLabel>Name</ControlLabel>
-                <FormControl type="text"
-                    onChange={e=>this.handleUserInput(e)}
-                    name="name"
-                />
-                <ControlLabel>Symbol</ControlLabel>
-                <FormControl type="text"
-                    onChange={e=>this.handleUserInput(e)}
-                    name="symbol"
-                />
-                <ControlLabel>ID</ControlLabel>
-                <FormControl type="text"
-                    onChange={e=>this.handleUserInput(e)}
-                    name="id"
-                />
-                <button onClick={e=>this.handleSubmit(e)}>Submit</button>
-                <button onClick={()=>this.setState({target:this.state.originalTarget})}>Refresh</button>
-            </FormGroup>
-          </form>
-          {this.renderTable()}
-          </div>
-        );
-      }
-}
-
-export default TargetSearch;
+*/

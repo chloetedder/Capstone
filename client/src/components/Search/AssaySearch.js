@@ -3,19 +3,18 @@ import axios from 'axios';
 import { Pagination, Table, FormControl, FormGroup, ControlLabel, Grid } from 'react-bootstrap';
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 
-
-class ChemicalSearch extends Component {
+class AssaySearch extends Component {
     constructor(props) {
         super(props);
         this.state = {
-          originalChem: [],
+          originalAssay: [],
           response: [],
-          chem: [],
+          assay: [],
           showTable: 0,
           name: '',
-          formula: '',
-          smiles: '',
-          weight: '',
+          aid: '',
+          tissue: '',
+          reagent: '',
           currentPage: 1,
           rowsPerPage: 25
         }
@@ -23,7 +22,7 @@ class ChemicalSearch extends Component {
       }
     
       async results() {
-        await axios.get('http://localhost:5000/chem')
+        await axios.get('http://localhost:5000/posts')
         .then(res => {
           this.setState({ response: res.data })
         })
@@ -47,26 +46,26 @@ class ChemicalSearch extends Component {
     async handleSubmit(e){
         e.preventDefault()
         await this.results();
-        const chem = await this.renderContent();
+        const assay = await this.renderContent();
         this.setState({
-            chem, 
-            originalChemical: chem,
+            assay, 
+            originalAssay: assay,
             showTable: 1
         });
-        let filterArray = this.state.chem.filter(current=>{
-            return current.name.toString().includes(this.state.name);
+        let filterArray = this.state.assay.filter(current=>{
+            return current.assay_source_name.toString().includes(this.state.name);
         })
         filterArray = filterArray.filter(current=>{
-            return current.formula.toString().includes(this.state.formula);
+            return current.aid.toString().includes(this.state.aid);
         })
         filterArray = filterArray.filter(current=>{
-          return current.SMILES.toString().includes(this.state.smiles);
+            return current.tissue.toString().includes(this.state.tissue);
         })
         filterArray = filterArray.filter(current=>{
-          return current.MolWt.toString().includes(this.state.weight);
+          return current.key_assay_reagent_type.toString().includes(this.state.reagent);
         })
         this.setState({
-            chem: filterArray
+            assay: filterArray
         })
     }
     
@@ -79,41 +78,43 @@ class ChemicalSearch extends Component {
       }
 
       renderTable() {
-        if(this.state.showTable) {
+          if(this.state.showTable) {
             let first = this.state.response[0];
         let keys = [];
         for(let key in first){
           keys.push(key);
         }
-        const options = {
-          clearSearch: true
-        };
-        return (
-            <div>
-              <BootstrapTable keyField='tablefields'
-                  data={ this.state.chem }
-                  striped 
-                  pagination 
-                  search={true} 
-                  exportCSV={ true } 
-                  options={options}
-                  trClassName="customClass"
-                  >
-                      {keys.map(data => {
-                        return (
-                        <TableHeaderColumn width={200} height={200} dataField={data}>{data}</TableHeaderColumn>
-                        )
-                      })}
-              </BootstrapTable>
-          </div>
+
+        
+          const options = {
+            clearSearch: true
+          };
+          return (
+              <div>
+                <BootstrapTable keyField='tablefields'
+                    data={ this.state.assay }
+                    striped 
+                    pagination 
+                    search={true} 
+                    exportCSV={ true } 
+                    options={options}
+                    trClassName="customClass"
+                    >
+                        {keys.map(data => {
+                          return (
+                          <TableHeaderColumn width={200} height={200} dataField={data}>{data}</TableHeaderColumn>
+                          )
+                        })}
+                </BootstrapTable>
+            </div>
           );
           }
       }
       render() {
         return (
           <div className="App">
-          <h2>Chemical Advanced Search</h2>
-              <br/>
+          <h2>Assay Advanced Search</h2>
+                <br/>
           <form>
             <FormGroup>
                 <ControlLabel>Name</ControlLabel>
@@ -121,23 +122,23 @@ class ChemicalSearch extends Component {
                     onChange={e=>this.handleUserInput(e)}
                     name="name"
                 />
-                <ControlLabel>Formula</ControlLabel>
+                <ControlLabel>AID</ControlLabel>
                 <FormControl type="text"
                     onChange={e=>this.handleUserInput(e)}
-                    name="formula"
+                    name="aid"
                 />
-                <ControlLabel>SMILES</ControlLabel>
+                <ControlLabel>Tissue</ControlLabel>
                 <FormControl type="text"
                     onChange={e=>this.handleUserInput(e)}
-                    name="smiles"
+                    name="tissue"
                 />
-                <ControlLabel>Mole Weight</ControlLabel>
+                <ControlLabel>Reagent Type</ControlLabel>
                 <FormControl type="text"
                     onChange={e=>this.handleUserInput(e)}
-                    name="weight"
+                    name="reagent"
                 />
                 <button onClick={e=>this.handleSubmit(e)}>Submit</button>
-                <button onClick={()=>this.setState({chem:this.state.originalChemical})}>Refresh</button>
+                <button onClick={()=>this.setState({assay:this.state.originalAssay})}>Refresh</button>
             </FormGroup>
           </form>
           {this.renderTable()}
@@ -146,35 +147,10 @@ class ChemicalSearch extends Component {
       }
 }
 
-export default ChemicalSearch;
+export default AssaySearch;
+
 /*
-const {currentPage, rowsPerPage} = this.state;
-
-        const indexOfLastRow = currentPage * rowsPerPage;
-        const indexOfFirstRow = indexOfLastRow - rowsPerPage;
-        const currentRows = this.state.chem.slice(indexOfFirstRow, indexOfLastRow);
-
-
-        const pageNumbers = [];
-        for (let i = 1; i <= Math.ceil(this.state.chem.length / rowsPerPage); i++) {
-            pageNumbers.push(i);
-          }
-        
-          const renderPageNumbers = pageNumbers.map(number => {
-            return (
-              <Pagination.Item
-                key={number}
-                id={number}
-                onClick={this.handleClick}
-              >
-                {number}
-              </Pagination.Item>
-            );
-          });
-          
-          let count = 0;
-
-          <Grid>
+<Grid>
             <Table width="10%" height="50%" striped>
             <thead>
               <tr>
@@ -206,4 +182,30 @@ const {currentPage, rowsPerPage} = this.state;
           </Table>
                     <Pagination bsSize="medium">{renderPageNumbers}</Pagination>
             </Grid>
-          */
+
+            const {currentPage, rowsPerPage} = this.state;
+
+        const indexOfLastRow = currentPage * rowsPerPage;
+        const indexOfFirstRow = indexOfLastRow - rowsPerPage;
+        const currentRows = this.state.assay.slice(indexOfFirstRow, indexOfLastRow);
+
+
+        const pageNumbers = [];
+        for (let i = 1; i <= Math.ceil(this.state.assay.length / rowsPerPage); i++) {
+            pageNumbers.push(i);
+          }
+        
+          const renderPageNumbers = pageNumbers.map(number => {
+            return (
+              <Pagination.Item
+                key={number}
+                id={number}
+                onClick={this.handleClick}
+              >
+                {number}
+              </Pagination.Item>
+            );
+          });
+          
+          let count = 0;
+            */

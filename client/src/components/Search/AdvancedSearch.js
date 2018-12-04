@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import { FormGroup, ControlLabel, FormControl } from 'react-bootstrap';
 import ChemicalSearch from './ChemicalSearch';
 import TargetSearch from './TargetSearch';
+import AssaySearch from './AssaySearch';
+import ToxSearch from './ToxSearch';
 
 class AdvancedSearch extends Component {
 
@@ -28,11 +30,13 @@ class AdvancedSearch extends Component {
     render() {
         let seeing, key = this.state.eventKey;
         if(key == 1)
-            seeing = <p>This is event 1</p>;
+            seeing = <AssaySearch />;
         if(key == 2)
             seeing = <ChemicalSearch />;
         if(key == 3)
             seeing = <TargetSearch />;
+        if(key == 4)
+            seeing = <ToxSearch />;
         return (
             <div>
                 <FormGroup controlId="formControlsSelect">
@@ -45,6 +49,7 @@ class AdvancedSearch extends Component {
                         <option value="1">Assay</option>
                         <option value="2">Chemical</option>
                         <option value="3">Target</option>
+                        <option value="4">Toxicity</option>
                     </FormControl>
                 </FormGroup>
                 {seeing}

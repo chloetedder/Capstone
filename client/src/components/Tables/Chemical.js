@@ -1,16 +1,13 @@
 import React, { Component } from 'react';
 import axios from 'axios';
-import { Pagination, Table, Button, FormGroup } from 'react-bootstrap';
+import { Table } from 'react-bootstrap';
 
-class AssaySearch extends Component {
+class Chemical extends Component {
     constructor(props) {
         super(props);
         this.state = {
-          originalAssay: [],
           response: [],
-          assay: [],
-          currentNameInput: '',
-          currentIdInput: '',
+          chemical: [],
           currentPage: 1,
           rowsPerPage: 25
         }
@@ -19,16 +16,13 @@ class AssaySearch extends Component {
       
       async componentDidMount() {
         await this.results();
-        const assay = await this.renderContent();
-        this.setState({
-            assay, 
-            originalAssay: assay
-        });
-        console.log(this.state.assay)
+        const chemical = await this.renderContent();
+        this.setState({ chemical });
+        console.log(this.state.chemical)
       }
     
       async results() {
-        await axios.get('http://localhost:5000/posts')
+        await axios.get('http://localhost:5000/chem')
         .then(res => {
           this.setState({ response: res.data })
         })
@@ -40,34 +34,6 @@ class AssaySearch extends Component {
         this.setState({
             currentPage: listid
         });
-    }
-
-      handleIdInput(e){
-        this.setState({
-            currentIdInput: e.target.value
-        })
-        
-        
-    }
-
-    handleNameInput(e){
-        this.setState({
-            currentNameInput: e.target.value
-        })
-      
-    }
-
-    handleSubmit(e){
-        e.preventDefault()
-        let filterArray = this.state.assay.filter(current=>{
-            return current.aid.toString().includes(this.state.currentIdInput);
-        })
-        filterArray = filterArray.filter(current=>{
-            return current.assay_source_name.toString().includes(this.state.currentNameInput);
-        })
-        this.setState({
-            assay: filterArray
-        })
     }
     
       renderContent() {
@@ -88,23 +54,10 @@ class AssaySearch extends Component {
 
         const indexOfLastRow = currentPage * rowsPerPage;
         const indexOfFirstRow = indexOfLastRow - rowsPerPage;
-        const currentRows = this.state.assay.slice(indexOfFirstRow, indexOfLastRow);
+        const currentRows = this.state.chemical.slice(indexOfFirstRow, indexOfLastRow);
 
-/*
         const pageNumbers = [];
-        for (let i = 1; i <= Math.ceil(this.state.assay.length / rowsPerPage); i++) {
-            pageNumbers.push(<Pagination.Item onClick={this.handleClick}>{i}</Pagination.Item>);
-          }
-
-          <div>
-                    <table id="page-numbers">
-                    <Pagination bsSize="medium">{pageNumbers}</Pagination>
-                    </table>
-                </div>
-          </div>
-          */
-         const pageNumbers = [];
-          for (let i = 1; i <= Math.ceil(this.state.assay.length / rowsPerPage); i++) {
+          for (let i = 1; i <= Math.ceil(this.state.chemical.length / rowsPerPage); i++) {
             pageNumbers.push(i);
           }
         
@@ -119,21 +72,11 @@ class AssaySearch extends Component {
               </td>
             );
           });
-          
 
         return (
           <div className="App">
-          <h2>Assay Search</h2>
-          <h4>Search by aid</h4>
-          <FormGroup controlId="formBasicText">
-                <input type="text" onChange={e=>this.handleIdInput(e)}/>
-                <h4>Search by assay_source_name</h4>
-                <input type="text" onChange={e=>this.handleNameInput(e)}/>
-                <br/>
-                <Button onClick={e=>this.handleSubmit(e)}>Submit</Button>
-                <Button onClick={()=>this.setState({assay:this.state.originalAssay})}>Refresh</Button>
-          </FormGroup>
-          <Table width="10%" height="50%" striped>
+          <h4>Chemical</h4>
+          <Table striped>
             <thead>
               <tr>
                 {keys.map(data => {
@@ -143,9 +86,9 @@ class AssaySearch extends Component {
                 })}
               </tr>
             </thead>
-            <tbody height="10%">
+            <tbody>
                  { 
-                  currentRows.map(data => {
+                  this.state.chemical.map(data => {
                     return (
                       <tr>
                         {
@@ -162,7 +105,6 @@ class AssaySearch extends Component {
                 } 
             </tbody>
           </Table>
-          
           <div>
             <table id="page-numbers">
             {renderPageNumbers}
@@ -173,4 +115,4 @@ class AssaySearch extends Component {
       }
 }
 
-export default AssaySearch;
+export default Chemical;

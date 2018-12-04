@@ -2,29 +2,27 @@ import React, { Component } from 'react';
 import axios from 'axios';
 import { Table } from 'react-bootstrap';
 
-class Toxicity extends Component {
+class Assay extends Component {
     constructor(props) {
         super(props);
         this.state = {
           response: [],
-          posts: [],
-
+          assay: [],
           currentPage: 1,
           rowsPerPage: 25
-        };
+        }
         this.handleClick = this.handleClick.bind(this);
       }
       
       async componentDidMount() {
         await this.results();
-        const posts = await this.renderContent();
-        console.log("these are the posts:", posts);
-        this.setState({ posts });
-        console.log(this.state.posts);
+        const assay = await this.renderContent();
+        this.setState({ assay });
+        console.log(this.state.assay)
       }
     
       async results() {
-        await axios.get('http://localhost:5000/tox')
+        await axios.get('http://localhost:5000/posts')
         .then(res => {
           this.setState({ response: res.data })
         })
@@ -51,19 +49,18 @@ class Toxicity extends Component {
         for(let key in first){
           keys.push(key);
         }
-        let countRow = 0, countData = 0;
 
         const {currentPage, rowsPerPage} = this.state;
 
         const indexOfLastRow = currentPage * rowsPerPage;
         const indexOfFirstRow = indexOfLastRow - rowsPerPage;
-        const currentRows = this.state.posts.slice(indexOfFirstRow, indexOfLastRow);
-        console.log("current rows", currentRows);
+        const currentRows = this.state.assay.slice(indexOfFirstRow, indexOfLastRow);
 
         const pageNumbers = [];
-        for (let i = 1; i <= Math.ceil(this.state.posts.length / rowsPerPage); i++) {
+          for (let i = 1; i <= Math.ceil(this.state.assay.length / rowsPerPage); i++) {
             pageNumbers.push(i);
           }
+        
           const renderPageNumbers = pageNumbers.map(number => {
             return (
               <td
@@ -71,14 +68,14 @@ class Toxicity extends Component {
                 id={number}
                 onClick={this.handleClick}
               >
-                {number}
+                -  {number}  -
               </td>
             );
           });
 
         return (
           <div className="App">
-          <h4>Toxicity</h4>
+          <h4>Assay</h4>
           <Table striped>
             <thead>
               <tr>
@@ -90,14 +87,14 @@ class Toxicity extends Component {
               </tr>
             </thead>
             <tbody>
-                 {
-                  this.state.posts.map(data => {
+                 { 
+                  this.state.assay.map(data => {
                     return (
-                      <tr key={countRow++}>
+                      <tr>
                         {
                           Object.values(data).map(each => {
                             return (
-                            <td key={countData++}>{each}</td>
+                            <td>{each}</td>
                           )
                           })
                        }
@@ -108,12 +105,14 @@ class Toxicity extends Component {
                 } 
             </tbody>
           </Table>
-          <Table id="page-numbers">
+          <div>
+            <table id="page-numbers">
             {renderPageNumbers}
-          </Table>
+            </table>
+          </div>
           </div>
         );
       }
 }
 
-export default Toxicity;
+export default Assay;

@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
 import axios from 'axios';
-import { Table } from 'react-bootstrap';
+import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
+import './NewAssay.css';
 
-class Assay extends Component {
+class NewAssay extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -39,40 +40,32 @@ class Assay extends Component {
         for(let key in first){
           keys.push(key);
         }
+        const options = {
+            clearSearch: true
+          };
         return (
-          <div className="App">
-          <Table striped>
-            <thead>
-              <tr>
-                {keys.map(data => {
-                  return (
-                  <th key={data}>{data}</th>
-                  )
-                })}
-              </tr>
-            </thead>
-            <tbody>
-                 { 
-                  this.state.assay.map(data => {
+          <div>
+            <h2>Assay</h2>
+            <br/>
+            <BootstrapTable keyField='tablefields' 
+              data={ this.state.assay } 
+              striped 
+              pagination 
+              search={true} 
+              exportCSV={ true } 
+              options={options}
+              trClassName="customClass"
+              
+              >
+                  {keys.map(data => {
                     return (
-                      <tr>
-                        {
-                          Object.values(data).map(each => {
-                            return (
-                            <td>{each}</td>
-                          )
-                          })
-                       }
-                      </tr>
+                    <TableHeaderColumn width={200} height={200} dataField={data}>{data}</TableHeaderColumn>
                     )
-                   
-                  })
-                } 
-            </tbody>
-          </Table>
+                  })}
+            </BootstrapTable>
           </div>
         );
       }
 }
 
-export default Assay;
+export default NewAssay;
